@@ -27,6 +27,25 @@ integer height = 572
 string dataobject = "d_order_detail_sn"
 end type
 
+event dw_detail::itemchanged;call super::itemchanged;String ls_articolo,ls_descrizione
+long ll_count
+
+if Dwo.name = "ord_art_sn" then
+	SELECT tbart.art_cod_sn, tbart.art_des_sn, count(*)
+	INTO :ls_articolo, :ls_descrizione, :ll_count
+	FROM tbart_sn
+	WHERE tbart.art_cod_sn = :data
+	GROUP BY  tbart.art_cod_sn, tbart.art_des_sn;	
+	
+	if ll_count > 0 then
+		this.Object.tbart_art_des[row] = ls_descrizione
+	else
+		MessageBox("Errore","L'articolo inserito è inesistente")
+		RETURN 2
+	end if
+end if
+end event
+
 type dw_master from w_master_detail_ancestor`dw_master within w_order_sn
 integer x = 37
 integer y = 40
